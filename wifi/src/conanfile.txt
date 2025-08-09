@@ -1,0 +1,13 @@
+[requires]
+clixon/[~7]
+cligen/[~7]
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[tool_requires]
+cmake/[~4]
+
+[layout]
+cmake_layout
