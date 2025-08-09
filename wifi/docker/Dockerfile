@@ -32,7 +32,7 @@
 #
 
 FROM alpine
-MAINTAINER Olof Hagsand <olof@hagsand.se>
+LABEL authors="Olof Hagsand <olof@hagsand.se>"
 
 # Dependencies
 RUN apk add --update git make build-base gcc flex bison curl-dev nghttp2
@@ -75,8 +75,8 @@ RUN make DESTDIR=/clixon/build install-include
 # To make this adaptive, an installation script inside the container can be made, but now
 # the hardcoded paths are used.
 RUN mkdir -p /clixon/build/var/wifi
-RUN mkdir -p /clixon/build/lib/wifi/clispec
-RUN mkdir -p /clixon/build/lib/wifi/backend
+RUN mkdir -p /clixon/build/usr/local/lib/wifi/clispec
+RUN mkdir -p /clixon/build/usr/local/lib/wifi/backend
 
 # Copy src file from local: config file and standard clispec file
 COPY src/wifi.xml /clixon/build/usr/local/etc/clixon/
@@ -90,11 +90,18 @@ WORKDIR /clixon
 COPY startsystem.sh startsystem.sh 
 RUN install startsystem.sh /clixon/build/usr/local/bin/
 
+# plugin example
+COPY src/wifi_backend_plugin.c /clixon/plugin/
+RUN cd /clixon/plugin && \
+    gcc -DLIBXML_STATIC -Dwifi_backend_plugin_EXPORTS -m64 -O3 -DNDEBUG -fPIC -I /clixon/build/usr/local/include -o wifi_backend_plugin.o -c wifi_backend_plugin.c && \
+    gcc -fPIC -m64 -O3 -DNDEBUG -shared -L /clixon/build/usr/local/lib -o /clixon/plugin/libwifi_backend_plugin.so wifi_backend_plugin.o -l clixon -l cligen -l ssl -l crypto -l rt -l nghttp2 -lpthread -ldl -lz && \
+    cp /clixon/plugin/libwifi_backend_plugin.so /clixon/build/usr/local/lib/wifi/backend/01-wifi_backend_plugin.so
+
 #
 # Stage 2
 # The second step skips the development environment and builds a runtime system
 FROM alpine
-MAINTAINER Olof Hagsand <olof@hagsand.se>
+LABEL authors="Olof Hagsand <olof@hagsand.se>"
 
 # For clixon and cligen
 RUN apk add --update flex bison
@@ -121,5 +128,5 @@ COPY --from=0 /usr/local/share/openconfig/* /usr/local/share/openconfig/
 # Avoid using -f
 RUN ln -s /usr/local/etc/clixon/wifi.xml /usr/local/etc/clixon.xml
 
-# Start the backend and restconf deamons
-CMD /usr/local/bin/startsystem.sh
+# Compile plugin, start the backend and restconf deamons
+CMD ["/usr/local/bin/startsystem.sh"]

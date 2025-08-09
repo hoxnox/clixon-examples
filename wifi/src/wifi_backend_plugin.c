@@ -68,5 +68,6 @@ static clixon_plugin_api api = {
 
 clixon_plugin_api *
 clixon_plugin_init(clixon_handle h) {
+    clixon_debug(1, "clixon-plug-wifi init");
     return &api;
 }
