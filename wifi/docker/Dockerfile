@@ -87,7 +87,7 @@ COPY yang/*.yang /clixon/build/usr/local/share/clixon/
 
 # Copy startscript for starting backend and restconf
 WORKDIR /clixon
-COPY startsystem.sh startsystem.sh 
+COPY docker/startsystem.sh startsystem.sh 
 RUN install startsystem.sh /clixon/build/usr/local/bin/
 
 # plugin example

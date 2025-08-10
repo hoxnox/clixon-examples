@@ -61,7 +61,7 @@ int wifi_commit(clixon_handle h, transaction_data td) {
 clixon_plugin_api *clixon_plugin_init(clixon_handle h);
 
 static clixon_plugin_api api = {
-    "wifi backend",
+    "nx wifi backend",
     clixon_plugin_init,
     .ca_trans_commit = wifi_commit,
 };

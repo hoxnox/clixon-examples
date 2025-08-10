@@ -3,11 +3,19 @@
 This directory contains code for running, building and pushing the clixon
 openconfig wifi-system docker container. 
 
+## Building without compiling
+
+```sh
+sed 's|@SYSCONFDIR@|/usr/local/etc|; s|@DATADIR@|/usr/local/share|; s|@LIBDIR@|/usr/local/lib|; s|@LOCALSTATEDIR@|/usr/local/var|; s|@CLICON_GROUP@|root|; s|@CLICON_USER@|root|; s|@SBINDIR@|/usr/local/sbin|' wifi/src/wifi.xml.in &> wifi/src/wifi.xml
+cd wifi
+docker build -t clixon/wifi-system -f docker/Dockerfile .
+```
+
 ## Example run
 
 First, the container is started with a backend and a restconf listening on port 8080:
 ```
-  $ sudo docker run --rm -p 8080:80 --name wifi -d clixon/wifi-system
+  $ sudo docker -e DBG=all run --rm -p 8080:80 --name wifi -d clixon/wifi-system
 ```
 
 You can start a CLI with some example commands:
@@ -57,6 +65,11 @@ Or using restconf using curl on exposed port 8080:
       ]
     }
   }
+```
+
+View logs:
+```
+docker logs wifi
 ```
 
 ## Build and push
