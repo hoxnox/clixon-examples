@@ -58,11 +58,15 @@ int wifi_commit(clixon_handle h, transaction_data td) {
 }
 
 /* Forward declaration */
-clixon_plugin_api *clixon_plugin_init(clixon_handle h);
+clixon_plugin_api* clixon_plugin_init(clixon_handle h);
+int clixon_plugin_start(clixon_handle h);
+int clixon_plugin_exit(clixon_handle h);
 
 static clixon_plugin_api api = {
     "nx wifi backend",
     clixon_plugin_init,
+    clixon_plugin_start,
+    clixon_plugin_exit,
     .ca_trans_commit = wifi_commit,
 };
 
@@ -70,4 +74,16 @@ clixon_plugin_api *
 clixon_plugin_init(clixon_handle h) {
     clixon_debug(1, "clixon-plug-wifi init");
     return &api;
+}
+
+int
+clixon_plugin_start(clixon_handle h) {
+    clixon_debug(1, "clixon-plug-wifi start");
+    return 0;
+}
+
+int
+clixon_plugin_exit(clixon_handle h) {
+    clixon_debug(1, "clixon-plug-wifi exit");
+    return 0;
 }
