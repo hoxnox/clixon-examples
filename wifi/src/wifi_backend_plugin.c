@@ -51,9 +51,43 @@
 #include <clixon/clixon.h>
 
 /* These include signatures for plugin and transaction callbacks. */
-#include <clixon/clixon_backend.h> 
+#include <clixon/clixon_backend.h>
+
+void debug(cxobj** xml, int cnt) {
+    for (size_t i = 0; i < cnt; ++i) {
+        cbuf* cb = cbuf_new_alloc(4096);
+        clixon_xml2cbuf(cb, xml[i], 2, 1, NULL, -1, 0);
+        clixon_debug(1, "xml: %s", cbuf_get(cb));
+        cbuf_free(cb);
+    }
+}
+
 
 int wifi_commit(clixon_handle h, transaction_data td) {
+    cxobj* tg = transaction_target(td);
+    debug(&tg, 1);
+    cxobj* src = transaction_src(td);
+    debug(&src, 1);
+
+    cbuf* cb = cbuf_new_alloc(4096);
+    clixon_xml_diff2cbuf(cb, src, tg);
+    clixon_debug(1, "diff:\n%s", cbuf_get(cb));
+    cbuf_free(cb);
+
+    cxobj** dvec = transaction_dvec(td);
+    size_t dlen = transaction_dlen(td);
+    debug(dvec, dlen);
+
+    cxobj** avec = transaction_avec(td);
+    size_t alen = transaction_alen(td);
+    debug(avec, alen);
+
+    cxobj** scvec = transaction_scvec(td);
+    cxobj** tcvec = transaction_tcvec(td);
+    size_t clen = transaction_clen(td);
+    debug(scvec, clen);
+    debug(tcvec, clen);
+
     return 0;
 }
 
